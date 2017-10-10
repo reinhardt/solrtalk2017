@@ -1,0 +1,5 @@
+Integration of Apache Solr into Plone is well-established for powering fast, scalable full-text search with highly relevant results. The many amazing features of Solr like faceting, hit highlighting and suggestions add real value for the user. Even when search is not explicitly the given task, Solr can be extremely helpful as a portal_catalog replacement to filter content for speeding up complex views and generating overview pages and navigation.
+
+In this talk I will relate my experiences and outline the ways in which we use Solr with Plone at Syslab.com. I will highlight the benefits of Solr as well as report some caveats and lessons learned over the years.
+
+Previous experience with Solr will help you get the most out of hearing this talk but is not a requirement.

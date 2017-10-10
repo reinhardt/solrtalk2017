@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Solr and Plone - Search and Beyond</title>
+    <meta charset="utf-8">
+    <style>
+      @font-face {
+        font-family: 'Yanone Kaffeesatz';
+        font-style: normal;
+        font-weight: 400;
+        src: local('Yanone Kaffeesatz Regular'), local('YanoneKaffeesatz-Regular'), url(./fonts/Yanone_Kaffeesatz/YanoneKaffeesatz-Regular.ttf);
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+      }
+      @font-face {
+        font-family: 'Droid Serif';
+        font-style: normal;
+        font-weight: 400;
+        src: local('Droid Serif Regular'), local('DroidSerif-Regular'), url(./fonts/Droid_Serif/DroidSerif-Regular.ttf);
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+      }
+      @font-face {
+        font-family: 'Ubuntu Mono';
+        font-style: normal;
+        font-weight: 400;
+        src: local('Ubuntu Mono'), local('UbuntuMono-Regular'), url(./fonts/Ubuntu_Mono/UbuntuMono-Regular.ttf);
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+      }
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      img {
+          max-width: 100%;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+
+      .outline {
+          color: #999;
+      }
+      .current {
+          color: black;
+          font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Solr and Plone - Search and Beyond
+
+---
+
+# Outline
+
+* Solr
+* Connecting Solr to Plone
+* Full text search features
+* General catalog replacement
+* Pros and cons (or: is it for me?)
+* Summary
+
+
+???
+
+* Solr
+  * What is Solr?
+  * Using Solr
+* Connecting Solr to Plone
+  * collective.solr
+  * scorched (& ploneintranet.search?)
+* Full text search features
+  * Faceting
+  * Highlighting
+  * Suggestions
+  * relevance/boosting
+  * Cross-site search
+* General catalog replacement
+  * workspace sidebar
+  * "Latest" portlet
+  * Contacts App
+* So should I use Solr?
+  * Speed & scaling
+    * specify returned metadata 
+  * complex queries (AND/OR)
+  * transaction integrity
+  * external
+* Summary
+
+---
+
+# Solr
+
+* What is Solr?
+* Using Solr
+
+---
+
+# What is Solr?
+
+* Lucene indexing and search engine
+* Plus HTTP interface, caching, replication etc.
+* Open Source
+
+???
+
+* Lucene Core
+  * Java-based indexing and search technology
+  * spellchecking, hit highlighting, analysis/tokenization
+* Solr
+  * high performance search server
+  * XML/HTTP and JSON/Python/Ruby APIs
+  * faceted search, caching, replication, web admin interface
+* Apache - Open Source
+
+---
+
+# Using Solr
+
+Demo
+
+---
+
+# Connecting Solr to Plone
+
+* collective.solr
+* scorched & ploneintranet.search
+
+---
+
+# collective.solr
+
+* Uses collective.indexing
+* Patches portal_catalog
+* If SearchableText is in the query, divert to Solr
+
+```python
+In [1]: result = portal_catalog(SearchableText='test')
+
+In [2]: result.__class__
+Out[2]: collective.solr.parser.SolrResponse
+
+In [3]: result[0].__class__
+Out[3]: collective.solr.flare.PloneFlare
+
+In [4]: pprint(list(result))
+[{'Creator': 'test_user_1_',
+  'Date': DateTime('2015/11/12 10:19:43 GMT+0'),
+  'Description': '',
+  'Language': 'en',
+  'Title': 'Test',
+  'Type': 'Folder',
+  ...
+  'score': 0.0035914106}]
+
+```
+
+???
+
+* Patching
+  * Con
+    * Conflicts
+    * Less transparency
+  * Pro
+    * Easy to use
+    * Same interface
+
+---
+
+# collective.solr
+
+* Large SearchableText slows down whole catalog
+  * Clear SearchableText in catalog
+  * Let solr handle full text search
+* Generalisation: Required query parameters
+* May be empty - always use solr
+
+![Required query parameters](required-query-parameters-01.png)
+
+---
+
+# scorched
+
+* low-level
+  * more powerful
+  * less convenient
+
+```python
+In [1]: si.query(SearchableText='test')
+```
+
+---
+
+# ploneintranet.search
+
+* Based on scorched
+* Tuned towards Plone/Ploneintranet
+* Closer to portal_catalog but retains solr powers
+
+---
+
+# Outline
+
+.outline[
+* Solr
+* Connecting Solr to Plone
+* .current[Full text search features]
+* General catalog replacement
+* Pros and cons (or: is it for me?)
+* Summary
+]
+
+---
+
+# Full text search features
+
+---
+
+## Faceting
+
+* Drill down into search results along "facets"
+
+---
+
+## Faceting
+
+![Recensio.net Content Browsing](recensio-browsing-01.png)
+
+---
+
+## Highlighting
+
+---
+
+## Suggestions
+
+---
+
+## Relevance
+
+* Boost more recent documents (e.g. in intranets)
+
+---
+
+## Cross-Site Search
+
+* Multiple sources, same Solr
+* Other Plone sites
+* Arbitrary sites with Nutch
+* Tweak results page to get external links right
+
+---
+
+# General catalog replacement
+
+---
+
+## Workspace Sidebar
+
+* Potentially high volume of content
+* Flexible grouping/sorting
+* Full text search
+
+    </textarea>
+
+    <script src="remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
