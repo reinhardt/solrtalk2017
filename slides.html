@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <head>
+    <head>
     <title>Solr and Plone - Search and Beyond</title>
     <meta charset="utf-8">
     <style>
@@ -44,8 +44,8 @@
           font-weight: bold;
       }
     </style>
-  </head>
-  <body>
+    </head>
+    <body>
     <textarea id="source">
 
 class: center, middle
@@ -56,65 +56,32 @@ class: center, middle
 
 # Outline
 
-* Solr
-* Connecting Solr to Plone
-* Full text search features
-* General catalog replacement
-* Pros and cons (or: is it for me?)
-* Summary
-
-
-???
-
-* Solr
-  * What is Solr?
-  * Using Solr
-* Connecting Solr to Plone
-  * collective.solr
-  * scorched (& ploneintranet.search?)
-* Full text search features
-  * Faceting
-  * Highlighting
-  * Suggestions
-  * relevance/boosting
-  * Cross-site search
-* General catalog replacement
-  * workspace sidebar
-  * "Latest" portlet
-  * Contacts App
-* So should I use Solr?
-  * Speed & scaling
-    * specify returned metadata 
-  * complex queries (AND/OR)
-  * transaction integrity
-  * external
-* Summary
 
 ---
 
 # Solr
 
-* What is Solr?
-* Using Solr
+*   What is Solr?
+*   Using Solr
 
 ---
 
 # What is Solr?
 
-* Lucene indexing and search engine
-* Plus HTTP interface, caching, replication etc.
-* Open Source
+*   Lucene indexing and search engine
+*   Plus HTTP interface, caching, replication etc.
+*   Open Source
 
 ???
 
-* Lucene Core
-  * Java-based indexing and search technology
-  * spellchecking, hit highlighting, analysis/tokenization
-* Solr
-  * high performance search server
-  * XML/HTTP and JSON/Python/Ruby APIs
-  * faceted search, caching, replication, web admin interface
-* Apache - Open Source
+*   Lucene Core
+    *   Java-based indexing and search technology
+    *   spellchecking, hit highlighting, analysis/tokenization
+*   Solr
+    *   high performance search server
+    *   XML/HTTP and JSON/Python/Ruby APIs
+    *   faceted search, caching, replication, web admin interface
+*   Apache - Open Source
 
 ---
 
@@ -126,67 +93,65 @@ Demo
 
 # Connecting Solr to Plone
 
-* collective.solr
-* scorched & ploneintranet.search
-
----
-
-# collective.solr
-
-* Uses collective.indexing
-* Patches portal_catalog
-* If SearchableText is in the query, divert to Solr
-
-```python
-In [1]: result = portal_catalog(SearchableText='test')
-
-In [2]: result.__class__
-Out[2]: collective.solr.parser.SolrResponse
-
-In [3]: result[0].__class__
-Out[3]: collective.solr.flare.PloneFlare
-
-In [4]: pprint(list(result))
-[{'Creator': 'test_user_1_',
-  'Date': DateTime('2015/11/12 10:19:43 GMT+0'),
-  'Description': '',
-  'Language': 'en',
-  'Title': 'Test',
-  'Type': 'Folder',
-  ...
-  'score': 0.0035914106}]
-
-```
+*   collective.solr
+*   alm.solrindex
+*   scorched & ploneintranet.search
 
 ???
 
-* Patching
-  * Con
-    * Conflicts
-    * Less transparency
-  * Pro
-    * Easy to use
-    * Same interface
+*   Why?
+    *   Speed
+    *   Batching
+    *   Complex queries
+    *   Cross-site search
+
+## Speed
+
+*   Large SearchableText slows down whole catalog
+*   Clear SearchableText in catalog
+*   Let solr handle full text search
 
 ---
 
 # collective.solr
 
-* Large SearchableText slows down whole catalog
-  * Clear SearchableText in catalog
-  * Let solr handle full text search
-* Generalisation: Required query parameters
-* May be empty - always use solr
+*   Patches portal_catalog
+*   Indexes both in catalog and solr
+*   If SearchableText is in the query, divert to Solr
+
+
+???
+
+*   Patching
+    *   Con
+        *   Conflicts
+        *   Less transparency
+    *   Pro
+        *   Easy to use
+        *   Same interface
+
+---
+
+# collective.solr
+
+*   Generalisation: Required query parameters
+*   May be empty - always use solr
 
 ![Required query parameters](required-query-parameters-01.png)
 
 ---
 
+# alm.solrindex
+
+* Implements single index with a Solr connector
+
+---
+
 # scorched
 
-* low-level
-  * more powerful
-  * less convenient
+*   low-level Solr API
+    *   more powerful
+    *   less convenient
 
 ```python
 In [1]: si.query(SearchableText='test')
@@ -196,73 +161,105 @@ In [1]: si.query(SearchableText='test')
 
 # ploneintranet.search
 
-* Based on scorched
-* Tuned towards Plone/Ploneintranet
-* Closer to portal_catalog but retains solr powers
+*   Based on scorched
+*   Tuned towards Plone/Ploneintranet
+*   Closer to portal_catalog but retains solr powers
 
 ---
 
-# Outline
-
-.outline[
-* Solr
-* Connecting Solr to Plone
-* .current[Full text search features]
-* General catalog replacement
-* Pros and cons (or: is it for me?)
-* Summary
-]
+# Benefits
 
 ---
 
-# Full text search features
+## Boosting - Total Control over your Search Results
+
+*    A good search shows the most relevant results first
+*    Solr results are sorted by score
+*    Score can be influenced via boosting
+*    Example: Date boost - recently added/modified content scores higher
 
 ---
 
-## Faceting
+## Highlighting - Context for your Search Terms
 
-* Drill down into search results along "facets"
+*    Knowing that a term occurred somewhere vs. knowing the sentence it occurred in
+*    Solr can deliver snippets containing the search terms
 
----
-
-## Faceting
-
-![Recensio.net Content Browsing](recensio-browsing-01.png)
 
 ---
 
-## Highlighting
+## Cross-Site Search - Search all your Content in one Place
+
+*   There's probably more than just your Plone site
+*   What if the user doesn't know where the information is?
+*   Index multiple sources into same Solr
+    *   Other Plone sites
+    *   Arbitrary sites with Nutch
+*   Tweak query to search for all paths (not only /Plone)
+*   Tweak results page to get external links right
 
 ---
 
-## Suggestions
+## Complex Queries - Formulate precisely what you want to find
+
+*   Give me all items that are
+    *   inside Folder A *OR* Folder B
+
+        *AND*
+
+    *   that have been modified within the last week *OR* created within the last month
+*   Catalog does only *AND*
+*   Solr has flexible query language (AND/OR/NOT, parentheses, ...)
 
 ---
 
-## Relevance
-
-* Boost more recent documents (e.g. in intranets)
+# Use Cases
 
 ---
 
-## Cross-Site Search
+## Calendar
 
-* Multiple sources, same Solr
-* Other Plone sites
-* Arbitrary sites with Nutch
-* Tweak results page to get external links right
+*   Query events from Solr
+*   Render in JS
+*   Create event -> update calendar view
+*   Index data needs to be updated immediately
+*   However, commit is expensive
+*   Asynchronous commit: view not up to date
 
 ---
 
-# General catalog replacement
+## Contacts
 
 ---
 
 ## Workspace Sidebar
 
-* Potentially high volume of content
-* Flexible grouping/sorting
-* Full text search
+*   Various groupings
+*   Full text search
+
+---
+
+## Faceted Browsing
+
+![Recensio.net Content Browsing](recensio-browsing-01.png)
+
+???
+
+* Start with full list of content
+* Drill down using facets
+* Number of results shown
+
+---
+
+## Authors Directory
+
+![Recensio.net Content Browsing](recensio-authors-01.png)
+
+???
+
+* List of authors, alphabet index
+* Icons indicate type of content available
+* Three queries, faceting information
 
     </textarea>
 
@@ -271,5 +268,5 @@ In [1]: si.query(SearchableText='test')
     <script>
       var slideshow = remark.create();
     </script>
-  </body>
+    </body>
 </html>
