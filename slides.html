@@ -52,12 +52,16 @@ class: center, middle
 
 # Solr and Plone - Search and Beyond
 
+Manuel Reinhardt - Syslab.com - reinhardt@syslab.com
+
 ---
 
 # Outline
 
 
 ---
+
+exclude: true
 
 # Solr
 
@@ -84,6 +88,8 @@ class: center, middle
 *   Apache - Open Source
 
 ---
+
+exclude: true
 
 # Using Solr
 
@@ -115,13 +121,13 @@ Demo
 
 # collective.solr
 
-*   Patches portal_catalog
-*   Indexes both in catalog and solr
+*   Indexes both in catalog and solr (`collective.indexing`)
 *   If SearchableText is in the query, divert to Solr
 
 
 ???
 
+*   Patches portal_catalog
 *   Patching
     *   Con
         *   Conflicts
@@ -131,6 +137,8 @@ Demo
         *   Same interface
 
 ---
+
+exclude: true
 
 # collective.solr
 
@@ -171,36 +179,62 @@ In [1]: si.query(SearchableText='test')
 
 ---
 
-## Boosting - Total Control over your Search Results
+## Boosting
+
+*Total Control over your Search Results*
 
 *    A good search shows the most relevant results first
+
+--
 *    Solr results are sorted by score
-*    Score can be influenced via boosting
+
+--
+*    Influence score via boosting
+
+--
 *    Example: Date boost - recently added/modified content scores higher
 
 ---
 
-## Highlighting - Context for your Search Terms
+## Highlighting
 
-*    Knowing that a term occurred somewhere vs. knowing the sentence it occurred in
-*    Solr can deliver snippets containing the search terms
+*Context for your Search Terms*
 
+*    In what connection does this document mention my search term?
+*    Solr can deliver snippets containing the search term
+
+![UniBW Highlighting](unibw-highlighting-01.png)
 
 ---
 
-## Cross-Site Search - Search all your Content in one Place
+## Cross-Site Search
 
-*   There's probably more than just your Plone site
+*Search all your Content in one Place*
+
+*   There's more than just your Plone site
 *   What if the user doesn't know where the information is?
+
+--
 *   Index multiple sources into same Solr
     *   Other Plone sites
     *   Arbitrary sites with Nutch
+
+--
+
 *   Tweak query to search for all paths (not only /Plone)
 *   Tweak results page to get external links right
 
 ---
 
-## Complex Queries - Formulate precisely what you want to find
+## Cross-Site Search
+
+![UniBW Cross-Site Search](unibw-cross-site-01.png)
+
+---
+
+## Complex Queries
+
+*Formulate precisely what you want to find*
 
 *   Give me all items that are
     *   inside Folder A *OR* Folder B
@@ -211,55 +245,10 @@ In [1]: si.query(SearchableText='test')
 *   Catalog does only *AND*
 *   Solr has flexible query language (AND/OR/NOT, parentheses, ...)
 
----
-
-# Use Cases
-
----
-
-## Calendar
-
-*   Query events from Solr
-*   Render in JS
-*   Create event -> update calendar view
-*   Index data needs to be updated immediately
-*   However, commit is expensive
-*   Asynchronous commit: view not up to date
-
----
-
-## Contacts
-
----
-
-## Workspace Sidebar
-
-*   Various groupings
-*   Full text search
-
----
-
-## Faceted Browsing
-
-![Recensio.net Content Browsing](recensio-browsing-01.png)
-
 ???
 
-* Start with full list of content
-* Drill down using facets
-* Number of results shown
+Real-world example?
 
----
-
-## Authors Directory
-
-![Recensio.net Content Browsing](recensio-authors-01.png)
-
-???
-
-* List of authors, alphabet index
-* Icons indicate type of content available
-* Three queries, faceting information
 
     </textarea>
 
