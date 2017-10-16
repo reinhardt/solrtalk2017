@@ -56,17 +56,9 @@ Manuel Reinhardt - Syslab.com - reinhardt@syslab.com
 
 ---
 
-# Outline
-
-
----
-
 exclude: true
 
-# Solr
-
-*   What is Solr?
-*   Using Solr
+# Outline
 
 ---
 
@@ -79,12 +71,11 @@ exclude: true
 ???
 
 *   Lucene Core
-    *   Java-based indexing and search technology
-    *   spellchecking, hit highlighting, analysis/tokenization
+    *   Java-based indexing and search engine
 *   Solr
     *   high performance search server
-    *   XML/HTTP and JSON/Python/Ruby APIs
-    *   faceted search, caching, replication, web admin interface
+    *   XML/JSON over HTTP
+    *   caching, replication, web admin interface, etc.
 *   Apache - Open Source
 
 ---
@@ -99,23 +90,31 @@ Demo
 
 # Connecting Solr to Plone
 
-*   collective.solr
-*   alm.solrindex
-*   scorched & ploneintranet.search
+*   Why?
+    *   Speed
+    *   Features
 
 ???
 
 *   Why?
     *   Speed
-    *   Batching
-    *   Complex queries
-    *   Cross-site search
+        *   portal_catalog is faster than objects
+        *   but has its limits
+    *   Features
+        *   Faceting
+        *   Highlighting
+        *   Complex queries
+        *   Cross-site search
+        *   etc.
 
-## Speed
+---
 
-*   Large SearchableText slows down whole catalog
-*   Clear SearchableText in catalog
-*   Let solr handle full text search
+# Connecting Solr to Plone
+
+*   How?
+    *   collective.solr
+    *   alm.solrindex
+    *   scorched & ploneintranet.search
 
 ---
 
@@ -124,17 +123,6 @@ Demo
 *   Indexes both in catalog and solr (`collective.indexing`)
 *   If SearchableText is in the query, divert to Solr
 
-
-???
-
-*   Patches portal_catalog
-*   Patching
-    *   Con
-        *   Conflicts
-        *   Less transparency
-    *   Pro
-        *   Easy to use
-        *   Same interface
 
 ---
 
@@ -161,6 +149,8 @@ exclude: true
     *   more powerful
     *   less convenient
 
+???
+
 ```python
 In [1]: si.query(SearchableText='test')
 ```
@@ -171,17 +161,20 @@ In [1]: si.query(SearchableText='test')
 
 *   Based on scorched
 *   Tuned towards Plone/Ploneintranet
-*   Closer to portal_catalog but retains solr powers
 
 ---
 
-# Benefits
+# Features
+
+*   Boosting
+*   Highlighting
+*   Cross-site search
 
 ---
 
-## Boosting
+# Boosting
 
-*Total Control over your Search Results*
+*Take Control over your Search Results*
 
 *    A good search shows the most relevant results first
 
@@ -196,14 +189,43 @@ In [1]: si.query(SearchableText='test')
 
 ---
 
-## Highlighting
+# Highlighting
+
+![UniBW Highlighting](unibw-highlighting-01.png)
+
+---
+
+# Highlighting
 
 *Context for your Search Terms*
 
 *    In what connection does this document mention my search term?
 *    Solr can deliver snippets containing the search term
 
-![UniBW Highlighting](unibw-highlighting-01.png)
+???
+
+*   What Google does
+
+--
+*    Caveat: SearchableText must be stored (metadata)
+*    Explicitly exclude from response
+
+---
+
+exclude: true
+
+# Faceting
+
+![Recensio browsing](recensio-browsing-01.png)
+
+---
+
+exclude: true
+
+# Faceting
+
+*   Drill down to improve initial results
+*   Numbers indicate new number of results
 
 ---
 
@@ -218,37 +240,94 @@ In [1]: si.query(SearchableText='test')
 *   Index multiple sources into same Solr
     *   Other Plone sites
     *   Arbitrary sites with Nutch
-
 --
-
 *   Tweak query to search for all paths (not only /Plone)
 *   Tweak results page to get external links right
 
 ---
 
-## Cross-Site Search
+# Cross-Site Search
 
 ![UniBW Cross-Site Search](unibw-cross-site-01.png)
 
 ---
 
-## Complex Queries
+exclude: true
+
+# Complex Queries
 
 *Formulate precisely what you want to find*
 
-*   Give me all items that are
-    *   inside Folder A *OR* Folder B
+*   Give me all items that
+    *   are inside Folder A *OR* are tagged with T
 
         *AND*
 
-    *   that have been modified within the last week *OR* created within the last month
-*   Catalog does only *AND*
+    *   have been modified within the last week *OR* created within the last month
+
+--
+
+exclude: true
+
+*   Catalog has hard rules (*AND* for keys, *OR* for values)
 *   Solr has flexible query language (AND/OR/NOT, parentheses, ...)
 
 ???
 
 Real-world example?
 
+---
+
+# Potential Pitfalls
+
+*   Network overhead
+*   transaction integrity
+*   Commits are slow
+
+---
+
+exclude: true
+
+# Batching
+
+*   Solr does proper batching
+*   May take some getting used to
+
+---
+
+# Network overhead
+
+*   Index processing time vs. network time
+*   With a local Solr you should be fine
+
+---
+
+# Transaction integrity
+
+*   Basic transaction support in c.indexing
+*   Sometimes Solr gets out of sync
+
+---
+
+# Commits are slow
+
+*   Optimised for lookup
+*   Asynchronous commits
+*   Delay in index update
+
+---
+
+# Summary
+
+*   Several methods of connecting
+*   Awesome features
+*   Some costs and risks
+
+???
+
+* If you subscribe to "query should be fast, indexing can take time"
+* If your site is large
+* If any of the features are of value to you
 
     </textarea>
 
