@@ -187,6 +187,10 @@ In [1]: si.query(SearchableText='test')
 --
 *    Example: Date boost - recently added/modified content scores higher
 
+```
+recip(ms(NOW/HOUR, modified), 3.16e-11, 0.08, 0.05)
+```
+
 ---
 
 # Highlighting
@@ -300,6 +304,10 @@ exclude: true
 *   Index processing time vs. network time
 *   With a local Solr you should be fine
 
+???
+
+* Exclude SearchableText
+
 ---
 
 # Transaction integrity
@@ -312,8 +320,17 @@ exclude: true
 # Commits are slow
 
 *   Optimised for lookup
+
+--
 *   Asynchronous commits
 *   Delay in index update
+
+???
+
+* Calendar view
+* Create event takes you back to calendar
+* Generated from Solr
+* Not up to date after creating event
 
 ---
 
@@ -323,11 +340,31 @@ exclude: true
 *   Awesome features
 *   Some costs and risks
 
+--
+
+*Should I use Solr?*
+
+* Fast query, slow indexing
+* Large site
+* Features
+
 ???
 
 * If you subscribe to "query should be fast, indexing can take time"
 * If your site is large
 * If any of the features are of value to you
+
+---
+
+# Thank you!
+
+Syslab.com - http://www.syslab.com/
+
+* Web Solutions
+* Intranets
+* Risk Assessment
+
+.center[![Syslab.com Logo](logo_syslabcom_smaller.jpg)]
 
     </textarea>
 
